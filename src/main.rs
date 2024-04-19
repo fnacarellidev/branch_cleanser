@@ -1,6 +1,6 @@
 use clap::Parser;
 use dialoguer::Confirm;
-use git2::{Repository, BranchType};
+use git2::{BranchType, Branches, Repository};
 
 #[derive(Parser)]
 #[command(name = "branch_cleanser")]
@@ -27,6 +27,18 @@ fn proceed_with_deletion() -> bool {
     confirmation
 }
 
+fn cleanse_branches(branches: Branches, ignore_branches: Vec<String> ) {
+    for branch_iterator in branches {
+        let (mut branch, _) = branch_iterator.unwrap();
+        let branch_name = &branch.name().unwrap().unwrap().to_owned();
+
+        if !ignore_branches.contains(branch_name) {
+            println!("Cleansing branch {}", branch_name);
+            let _ = branch.delete();
+        }
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
     let repo = match Repository::open(cli.git_repo_path) {
@@ -36,14 +48,7 @@ fn main() {
     let branches = repo.branches(Some(BranchType::Local)).unwrap();
 
     if proceed_with_deletion() {
-        for branch_iterator in branches {
-            let (mut branch, _) = branch_iterator.unwrap();
-            let branch_name = &branch.name().unwrap().unwrap().to_owned();
-
-            if !cli.ignore_branches.contains(branch_name) {
-                println!("Cleansing branch {}", branch_name);
-                let _ = branch.delete();
-            }
-        }
+        cleanse_branches(branches, cli.ignore_branches);
     }
+
 }
