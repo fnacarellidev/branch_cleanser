@@ -1,5 +1,5 @@
 [package]
-name = "clear_branches"
+name = "branch_cleanser"
 version = "0.1.0"
 edition = "2021"
 
