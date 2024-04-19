@@ -12,8 +12,8 @@ struct Cli {
     #[arg(short = 'p', long = "path", required = true, value_name = "/path/to/git/repo")]
     git_repo_path: String,
 
-    /// List of branches you'd like to ignore
-    #[arg(short, long = "ignore")]
+    /// Branch you'd like to ignore
+    #[arg(short, long = "ignore", value_name = "branch to ignore")]
     ignore_branches: Vec<String>
 }
 
