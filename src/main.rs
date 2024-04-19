@@ -1,5 +1,6 @@
-use git2::{Repository, BranchType};
 use clap::Parser;
+use dialoguer::Confirm;
+use git2::{Repository, BranchType};
 
 #[derive(Parser)]
 #[command(name = "branch_cleanser")]
@@ -13,25 +14,36 @@ struct Cli {
 
     /// A comma separated list of branches you'd like to ignore
     #[arg(short, long)]
-    ignore_branches: String
+    ignore_branches: Vec<String>
+}
+
+fn proceed_with_deletion() -> bool {
+    let confirmation = Confirm::new()
+        .with_prompt("Are you sure you wish to continue? Make sure you don't have any work you'd lost while deleting the branches.")
+        .default(false)
+        .interact()
+        .unwrap();
+
+    confirmation
 }
 
 fn main() {
     let cli = Cli::parse();
-
     let repo = match Repository::open(cli.git_repo_path) {
         Ok(repo) => repo,
         Err(e) => panic!("Failed to open: {}", e),
     };
     let branches = repo.branches(Some(BranchType::Local)).unwrap();
 
-    for branch_iterator in branches {
-        let (mut branch, _) = branch_iterator.unwrap();
-        let branch_name = branch.name().unwrap().unwrap();
+    if proceed_with_deletion() {
+        for branch_iterator in branches {
+            let (mut branch, _) = branch_iterator.unwrap();
+            let branch_name = &branch.name().unwrap().unwrap().to_owned();
 
-        if branch_name != "fnacarellidev-cgi" {
-            println!("Deleting branch {}", branch_name);
-            let _ = branch.delete();
+            if !cli.ignore_branches.contains(branch_name) {
+                println!("Cleansing branch {}", branch_name);
+                let _ = branch.delete();
+            }
         }
     }
 }
