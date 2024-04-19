@@ -6,8 +6,14 @@ use clap::Parser;
 #[command(version = "1.0")]
 #[command(about = "Cleanses your branches", long_about = None)]
 struct Cli {
-    #[arg(long)]
+
+    /// Path to the git repo you'd like to cleanse
+    #[arg(short, long)]
     git_repo_path: String,
+
+    /// A comma separated list of branches you'd like to ignore
+    #[arg(short, long)]
+    ignore_branches: String
 }
 
 fn main() {
