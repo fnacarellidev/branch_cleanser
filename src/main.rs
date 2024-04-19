@@ -9,11 +9,11 @@ use git2::{BranchType, Branches, Repository};
 struct Cli {
 
     /// Path to the git repo you'd like to cleanse
-    #[arg(short, long)]
+    #[arg(short = 'p', long = "path", required = true, value_name = "/path/to/git/repo")]
     git_repo_path: String,
 
     /// List of branches you'd like to ignore
-    #[arg(short, long)]
+    #[arg(short, long = "ignore")]
     ignore_branches: Vec<String>
 }
 
