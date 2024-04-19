@@ -12,7 +12,7 @@ struct Cli {
     #[arg(short, long)]
     git_repo_path: String,
 
-    /// A comma separated list of branches you'd like to ignore
+    /// List of branches you'd like to ignore
     #[arg(short, long)]
     ignore_branches: Vec<String>
 }
